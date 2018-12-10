@@ -4,31 +4,57 @@
  2 Obter o endereco do usuario pelo Id
 */
 
-function obterUsuario() {
+//Padrao: callback(erro, sucesso)
+//Callback como parâmetro será a função chamada ao término do setTimeout
+function obterUsuario(callback) {
     setTimeout(function () {
-        return {
+        return callback(null, {
             id: 1,
             nome: 'Aladin',
             dataNascimento: new Date()
-        }
+        })
     }, 1000)    
 }
 
-function obterTelefone(idUsuario) {
+function obterTelefone(idUsuario, callback) {
     setTimeout(() => {
-        return {
+        return callback(null, {
             telefone: 1129000333,
             ddd: 11
-        }
+        })
     }, 2000)
 }
 
-function obterEndereco(idUsuario) {
-
+function obterEndereco(idUsuario, callback) {
+    setTimeout(() => {
+        return callback(null, {
+            rua: 'dos bobos',
+            numero: 0
+        })
+    }, 1000)
 }
 
-const usuario = obterUsuario()
-const telefone = obterTelefone(usuario.id)
+obterUsuario(function resolverUsuario(error, usuario) {
+    if(error) {
+        console.error('DEU RUIM em USUARIO', error)
+        return;
+    }
+    obterTelefone(usuario.id, function resolverTelefone(error1, telefone) {
+        if(error1) {
+            console.error('DEU RUIM em TELEFONE', error1)
+            return;
+        }
+        obterEndereco(usuario.id, function resolverEndereco(error2, endereco) {
+            if(error2) {
+                console.error('DEU RUIM em ENDERECO', error2)
+                return;
+            }
 
-console.log('usuario', usuario)
-console.log('telefone', telefone)
+            console.log(`
+                Nome: ${usuario.nome}
+                Endereco: ${endereco.rua},${endereco.numero}
+                Telefone: (${telefone.ddd})${telefone.telefone}
+            `)
+        })
+    })
+})
